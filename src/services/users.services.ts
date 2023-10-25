@@ -9,7 +9,7 @@ import { config } from 'dotenv'
 config()
 class UserService {
   //viết hàm nhận vào user_id để bỏ vào payload tạo access token
-  signAccessToken(user_id: string) {
+  private signAccessToken(user_id: string) {
     return signToken({
       payload: {
         user_id,
@@ -21,7 +21,7 @@ class UserService {
     })
   }
   //viết hàm nhận vào user_id để bỏ vào payload tạo refresh token
-  signRefreshToken(user_id: string) {
+  private signRefreshToken(user_id: string) {
     return signToken({
       payload: {
         user_id,
@@ -31,6 +31,10 @@ class UserService {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRE_IN
       }
     })
+  }
+
+  private signAccessTokenAndRefreshToken(user_id: string) {
+    return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
   }
 
   async checkEmailExist(email: string) {
@@ -49,10 +53,14 @@ class UserService {
 
     //lấy user_id từ user mới tạo
     const user_id = result.insertedId.toString()
-    const [access_token, refresh_token] = await Promise.all([
-      this.signAccessToken(user_id),
-      this.signRefreshToken(user_id)
-    ])
+    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
+
+    return { access_token, refresh_token }
+  }
+
+  async login(user_id: string) {
+    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
+
     return { access_token, refresh_token }
   }
 }

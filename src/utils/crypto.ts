@@ -6,7 +6,7 @@ function sha256(content: string) {
   return createHash('sha256').update(content).digest('hex')
 }
 
-//viết 1 hàm nhận vào password và mã hóa
+//viết 1 hàm nhận vào password và trả về password đã mã hóa
 export function hashPassword(password: string) {
   return sha256(password + (process.env.PASSWORD_SECRET as string))
 }

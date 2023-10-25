@@ -6,18 +6,68 @@
 import { checkPrimeSync } from 'crypto'
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
+import { USERS_MESSAGES } from '~/constants/messages'
+import { ErrorWithStatus } from '~/models/Error'
+import databaseService from '~/services/database.services'
 import userService from '~/services/users.services'
+import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
 //interface được đùng để bổ nghĩa cho một object
-export const loginValidator = (req: Request, res: Response, next: NextFunction) => {
-  const { email, password } = req.body
-  if (!email || !password) {
-    return res.status(400).json({
-      message: 'Missing email or password'
-    })
-  }
-  next()
-}
+
+//body: {email và password}
+export const loginValidator = validate(
+  checkSchema({
+    email: {
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.EMAIL_IS_REQUIRED
+      },
+      isEmail: {
+        errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
+      },
+      trim: true,
+      custom: {
+        //value đại diện cho confirmed_password
+        options: async (value, { req }) => {
+          //tìm user nào có email và password giống client đưa
+          const user = await databaseService.users.findOne({
+            email: value,
+            password: hashPassword(req.body.password)
+          })
+          if (user === null) {
+            throw new Error(USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
+          }
+          req.user = user // kêu req giữ giùm cái user
+          return true //không return true là pending tới chết
+        }
+      }
+    },
+    password: {
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
+      },
+      isString: {
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
+      },
+      isLength: {
+        options: {
+          min: 8,
+          max: 50
+        },
+        errorMessage: USERS_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_8_TO_50
+      },
+      isStrongPassword: {
+        options: {
+          minLength: 8,
+          minLowercase: 1,
+          minNumbers: 1,
+          minSymbols: 1,
+          minUppercase: 1
+        },
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_STRONG
+      }
+    }
+  })
+)
 
 /*
 body: {
@@ -32,38 +82,53 @@ body: {
 export const registerValidator = validate(
   checkSchema({
     name: {
-      notEmpty: true,
-      isString: true,
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.NAME_IS_REQUIRED
+      },
+      isString: {
+        errorMessage: USERS_MESSAGES.NAME_MUST_BE_A_STRING
+      },
       trim: true,
       isLength: {
         options: {
           min: 1,
           max: 100
-        }
+        },
+        errorMessage: USERS_MESSAGES.NAME_LENGTH_MUST_BE_FROM_1_TO_100
       }
     },
     email: {
-      notEmpty: true,
-      isEmail: true,
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.EMAIL_IS_REQUIRED
+      },
+      isEmail: {
+        errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
+      },
       trim: true,
       custom: {
+        //value đại diện cho confirmed_password
         options: async (value, { req }) => {
           const isExist = await userService.checkEmailExist(value)
           if (isExist) {
-            throw new Error('Email already exists')
+            throw new Error(USERS_MESSAGES.EMAIL_ALREADY_EXISTS)
           }
           return true // k co return true thi no pending quai
         }
       }
     },
     password: {
-      notEmpty: true,
-      isString: true,
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
+      },
+      isString: {
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
+      },
       isLength: {
         options: {
           min: 8,
           max: 50
-        }
+        },
+        errorMessage: USERS_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_8_TO_50
       },
       isStrongPassword: {
         options: {
@@ -72,19 +137,19 @@ export const registerValidator = validate(
           minNumbers: 1,
           minSymbols: 1,
           minUppercase: 1
-        }
-      },
-      errorMessage:
-        'Password must be at least 8 characters long, contain at least 1 lowercase, 1 uppercase, 1 number and 1 symbol'
+        },
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_STRONG
+      }
     },
     confirm_password: {
-      notEmpty: true,
-      isString: true,
+      notEmpty: { errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED },
+      isString: { errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING },
       isLength: {
         options: {
           min: 8,
           max: 50
-        }
+        },
+        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_8_TO_50
       },
       isStrongPassword: {
         options: {
@@ -93,14 +158,14 @@ export const registerValidator = validate(
           minNumbers: 1,
           minSymbols: 1,
           minUppercase: 1
-        }
+        },
+        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_STRONG
       },
-      errorMessage:
-        'confirm_password must be at least 8 characters long, contain at least 1 lowercase, 1 uppercase, 1 number and 1 symbol',
+
       custom: {
         options: (value, { req }) => {
           if (value !== req.body.password) {
-            throw new Error('Confirm_password must match password')
+            throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD)
           }
           return true // k co return true thi no pending quai
         }
@@ -109,9 +174,10 @@ export const registerValidator = validate(
     date_of_birth: {
       isISO8601: {
         options: {
-          strict: true,
-          strictSeparator: true
-        }
+          strict: true, //ép nhập theo format ngày tháng năm
+          strictSeparator: true //
+        },
+        errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_BE_ISO8601
       }
     }
   })
