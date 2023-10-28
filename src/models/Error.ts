@@ -5,6 +5,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 
 //tạo kiểu lỗi giống thiết kế ban đâu
 type ErrorsType = Record<
+  //định nghĩa errorType lấy ở mapped
   string,
   {
     msg: string

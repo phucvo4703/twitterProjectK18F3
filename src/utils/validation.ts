@@ -19,6 +19,7 @@ export const validate = (validation: RunnableValidationChains<ValidationChain>) 
     for (const key in errorObject) {
       //lấy msg của từng lỗi ra
       const { msg } = errorObject[key]
+      //thằng k phải 422 sẽ có cấu trúc giống errorWithStatus và status khác 422 ném cho default error handler
       if (msg instanceof ErrorWithStatus && msg.status !== 422) {
         return next(msg) //các lỗi đặc biệt khác lỗi 422 chỉ báo từng cái 1
         //phải xử lí xong mới được qua lỗi đặc biệt khác
