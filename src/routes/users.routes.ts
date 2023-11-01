@@ -1,10 +1,21 @@
 import { Router } from 'express'
-import { logionController, logoutController, registerController } from '~/controllers/users.controllers'
+import {
+  emailVerifyController,
+  forgotPasswordController,
+  logionController,
+  logoutController,
+  registerController,
+  resendEmailVerifyController,
+  verifyForgorPasswordTokenController
+} from '~/controllers/users.controllers'
 import {
   accessTokenValidator,
+  emailVerifyTokenValidator,
+  forgotPasswordValidator,
   loginValidator,
-  refreshTokenValidatorT,
-  registerValidator
+  refreshTokenValidator,
+  registerValidator,
+  verifyForgotPasswordTokenValidation
 } from '~/middlewares/users.middlewares'
 import { wrapAsync } from '~/utils/handlers'
 const usersRouter = Router()
@@ -27,6 +38,47 @@ body:{
 
 usersRouter.post('/register', registerValidator, wrapAsync(registerController))
 
-usersRouter.post('/logout', accessTokenValidator, refreshTokenValidatorT, wrapAsync(logoutController))
+usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsync(logoutController))
 
+/*
+description: verify email
+method: post
+Path:/users/verify-email
+body: {
+  email_verify_token: string
+}
+*/
+usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapAsync(emailVerifyController))
+
+/*
+des: resed verify email
+method: post 
+path: /users/resend-verify-email
+headers: {Authorization: "Bearer access_token"}
+*/
+usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendEmailVerifyController))
+
+/*
+des: forgot password
+method: post
+path: /users/forgot-password
+body:{
+  email: string
+}
+*/
+usersRouter.post('/forgot-password', forgotPasswordValidator, wrapAsync(forgotPasswordController))
+
+/**
+ des: verify forgot password
+ method: post
+ path: /users/verify-forgot-password
+ body: {
+  forgot_password_token:string
+ }
+ */
+usersRouter.post(
+  '/verify-forgot-password',
+  verifyForgotPasswordTokenValidation,
+  wrapAsync(verifyForgorPasswordTokenController)
+)
 export default usersRouter

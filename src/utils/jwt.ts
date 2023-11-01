@@ -7,12 +7,12 @@ config()
 //nên dùng promise để hàm kí tên đợi và biến nó thành bất đồng bộ
 export const signToken = ({
   payload,
-  privateKey = process.env.JWT_SECRET as string,
+  privateKey,
   options = { algorithm: 'HS256' }
 }: {
   //định nghĩa object
   payload: string | object | Buffer
-  privateKey?: string //? k truyền vào thì lấy giá trị mặc định
+  privateKey: string //? k truyền vào thì lấy giá trị mặc định
   options?: jwt.SignOptions
 }) => {
   //đang kí tên có thể gặp lỗi nên dùng callback để xử lí lỗi
@@ -25,13 +25,7 @@ export const signToken = ({
   })
 }
 
-export const verifyToken = ({
-  token,
-  secretOrPublicKey = process.env.JWT_SECRET as string
-}: {
-  token: string
-  secretOrPublicKey?: string
-}) => {
+export const verifyToken = ({ token, secretOrPublicKey }: { token: string; secretOrPublicKey: string }) => {
   return new Promise<TokenPayload>((resolve, reject) => {
     jwt.verify(token, secretOrPublicKey, (err, decoded) => {
       if (err) throw reject(err)

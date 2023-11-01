@@ -27,10 +27,22 @@ export const USERS_MESSAGES = {
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
   LOGIN_SUCCESS: 'Login successfully',
   REGISTER_SUCCESS: 'Register successfully',
+  USER_BANNED: 'User banned',
+  USER_NOT_FOUND: 'User not found',
   //access token
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
   REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
   //refresh token
   USED_REFRESH_TOKEN_OR_NOT_EXISTED: 'Used refresh token or not existed',
-  LOGOUT_SUCCESSFULLY: 'Logout successfully'
+  LOGOUT_SUCCESSFULLY: 'Logout successfully',
+  //email verify token
+  EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
+  EMAIL_VERIFY_TOKEN_NOT_MATCH: 'Email verify token not match',
+  EMAIL_ALREADY_VERIFIED_BEFORE: 'Email already verified before',
+  EMAIL_VERIFY_SUCCESSFULLY: 'Email verified successfully',
+  RESEND_EMAIL_VERIFY_SUCCESS: 'Resend email verify successfully',
+  CHECK_EMAIL_TO_RESET_PASSWORD: 'Check email to reset password',
+  FORGOT_PASSWORD_TOKEN_IS_REQUIRED: 'Forgot password is required',
+  FORGOT_PASSWORD_TOKEN_NOT_MATCH: 'Forgot password token not match',
+  FORGOT_PASSWORD_TOKEN_SUCCESSFULLY: 'Forgot password token successfully'
 } as const
