@@ -33,6 +33,7 @@ class DatabaseService {
   }
 
   get RefreshToken(): Collection<RefreshToken> {
+    //nhớ sửa tên database nha thằng chó Phúc
     return this.db.collection(process.env.DB_REFRESH_TOKENS_COLLECTIONS as string) //nói với nó cái này chắc chắn là string//ép nó hiểu
   }
 }
