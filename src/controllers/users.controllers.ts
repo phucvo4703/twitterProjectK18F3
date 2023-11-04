@@ -92,3 +92,5 @@ export const verifyForgorPasswordTokenController = async (req: Request, res: Res
     message: USERS_MESSAGES.FORGOT_PASSWORD_TOKEN_SUCCESSFULLY
   })
 }
+
+export const resetPasswordController = async (req: Request, res: Response) => {}

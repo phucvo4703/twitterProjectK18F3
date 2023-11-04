@@ -81,4 +81,13 @@ usersRouter.post(
   verifyForgotPasswordTokenValidation,
   wrapAsync(verifyForgorPasswordTokenController)
 )
+
+/*
+des: reset password
+path: '/reset-password'
+method: POST
+Header: không cần, vì  ngta quên mật khẩu rồi, thì sao mà đăng nhập để có authen đc
+body: {forgot_password_token: string, password: string, confirm_password: string}
+*/
+usersRouter.post('/reset-password', resetPasswordValidator, wrapAsync(resetPasswordController))
 export default usersRouter

@@ -430,3 +430,5 @@ export const verifyForgotPasswordTokenValidation = validate(
     ['body']
   )
 )
+
+export const resetPasswordValidator = validate(checkSchema({}))
