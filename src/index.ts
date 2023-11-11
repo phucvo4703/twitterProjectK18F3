@@ -3,7 +3,7 @@ import usersRouter from './routes/users.routes'
 import databaseService from './services/database.services'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 
-const PORT = 3000
+const PORT = 4000
 
 const app = express()
 app.use(express.json()) //để cái app biết nhận dạng json để sài
