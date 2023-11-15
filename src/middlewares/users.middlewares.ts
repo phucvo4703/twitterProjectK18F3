@@ -283,7 +283,7 @@ export const refreshTokenValidator = validate(
             try {
               const [decoded_refresh_token, refresh_token] = await Promise.all([
                 verifyToken({ token: value, secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string }),
-                databaseService.RefreshToken.findOne({ token: value })
+                databaseService.refreshToken.findOne({ token: value })
               ])
 
               if (refresh_token === null) {
@@ -625,7 +625,7 @@ export const changePasswordValidator = validate(
             const { password } = user
             if (password !== hashPassword(value)) {
               throw new ErrorWithStatus({
-                message: USERS_MESSAGES.OLD_PASSWORD_NOT_MATCH, 
+                message: USERS_MESSAGES.OLD_PASSWORD_NOT_MATCH,
                 status: HTTP_STATUS.UNAUTHORIZED //401
               })
             }

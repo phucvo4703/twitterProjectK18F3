@@ -212,7 +212,6 @@ g}
   */
 usersRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController))
 //khỏi kiểm tra accesstoken, tại nó hết hạn rồi mà
-//refreshController chưa làm
 
 usersRouter.get('/oauth/google', wrapAsync(oAuthController))
 
